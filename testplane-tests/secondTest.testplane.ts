@@ -1,57 +1,58 @@
-describe("Test Autotization Tests", function () {
-    it('Autotization must be okey', async ({browser}) => {
-        // 1. Увеличиваем окно, чтобы элементы не перекрывались
+describe("Test Authorization Tests", function () {
+    it('Authorization should be successful', async ({ browser }) => {
+        const URL = "https://ru.api.rip/?secret_key=euNhV2";
+        const CREDENTIALS = {
+            email: "123@123.com",
+            password: "123456"
+        };
+        const SELECTORS = {
+            headerLoginBtn: '[data-test-tp="header-login-button"]',
+            modalEmail: '[data-test-tp="modal-login_email-field"]',
+            modalPassword: '[data-test-tp="modal-login_password-field"]',
+            modalLoginBtn: '[data-test-tp="modal-login_login-button"]',
+            headerUserMenuBtn: '[data-test-tp="header-user-menu-button"]'
+        };
+
+        // 1. Setup window
         await browser.setWindowSize(1920, 1080);
 
-        // 2. Открываем страницу
-        await browser.url("https://ru.api.rip/?secret_key=euNhV2");
+        // 2. Open page
+        await browser.url(URL);
 
-        // 3. Открываем модалку (через JS клик для надежности)
-        const headerLoginBtn = await browser.$('[data-test-tp="header-login-button"]');
-        await headerLoginBtn.waitForDisplayed({ timeout: 10000 });
+        // 3. Open modal (using JS click for reliability as requested)
+        const headerLoginBtn = await browser.$(SELECTORS.headerLoginBtn);
+        await headerLoginBtn.waitForDisplayed({ timeout: 5000 });
         await browser.execute(el => el.click(), headerLoginBtn);
+        console.log('✅ Modal opened');
 
-        console.log('✅ Открыли модальное окно');
+        // 4. Fill form
+        const emailField = await browser.$(SELECTORS.modalEmail);
+        const passField = await browser.$(SELECTORS.modalPassword);
 
-        // 4. Заполняем поля
-        const emailField = await browser.$('[data-test-tp="modal-login_email-field"]');
-        const passField = await browser.$('[data-test-tp="modal-login_password-field"]');
+        // Wait for animation if needed, though waitForDisplayed is usually enough
+        await emailField.waitForDisplayed({ timeout: 5000 });
 
-        await emailField.waitForDisplayed({ timeout: 10000 });
+        await emailField.setValue(CREDENTIALS.email);
+        await passField.setValue(CREDENTIALS.password);
 
-        // Используем addValue или setValue, и добавляем небольшую паузу
-        await emailField.setValue("123@123.com");
-        await passField.setValue("123456");
+        // 5. Submit login
+        const modalLoginBtn = await browser.$(SELECTORS.modalLoginBtn);
+        await modalLoginBtn.waitForEnabled({ timeout: 5000 });
 
-        // Пауза 500мс, чтобы скрипты сайта успели "понять", что поля заполнены
-        await browser.pause(500);
-
-        // 5. Кликаем кнопку "Войти" в модалке
-        const modalLoginBtn = await browser.$('[data-test-tp="modal-login_login-button"]');
-
-        // Ждем, пока кнопка станет доступной
-        await modalLoginBtn.waitForEnabled({ timeout: 10000 });
-
-        // ВАЖНО: Если обычный .click() не срабатывает (как на видео),
-        // используем принудительный JS клик
+        // JS click as requested for reliability
         await browser.execute(el => el.click(), modalLoginBtn);
-        console.log("✅ Нажали кнопку Войти в модалке");
+        console.log("✅ Login button clicked");
 
-        // 6. ПРОВЕРКА АВТОРИЗАЦИИ
-        // После клика ждем появления иконки профиля
-        const userMenuBtn = await browser.$('[data-test-tp="header-user-menu-button"]');
+        // 6. Verify assertions
+        const userMenuBtn = await browser.$(SELECTORS.headerUserMenuBtn);
 
-        // Ждем до 15 секунд, так как серверу нужно время ответить
-        const isLoggedIn = await userMenuBtn.waitForDisplayed({
-            timeout: 15000,
-            reverse: false, // ждем появления
-            timeoutMsg: "Кнопка профиля не появилась! Авторизация не удалась."
+        // Wait for login to complete (server response)
+        // Using built-in assertion which handles waiting internally
+        await expect(userMenuBtn).toBeDisplayed({
+            wait: 10000,
+            message: "User profile button did not appear; authorization might have failed."
         });
 
-        await browser.pause(1000);
-
-        if (isLoggedIn) {
-            console.log("🎉 ТЕСТ УСПЕШЕН: Иконка профиля видна");
-        }
+        console.log("🎉 TEST PASSED: User menu is visible");
     });
 })

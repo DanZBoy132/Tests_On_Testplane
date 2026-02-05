@@ -3,12 +3,6 @@
 //         await browser.url("https://smsfast.com/");
 //         await browser.pause(3000);
 //
-//         //2. Умное оджидание загрузки
-//         await browser.waitUntil(
-//             async () => (await browser.getTitle()).length > 0,
-//             {timeout: 10000, timeoutMsg: 'Page failed to load'}
-//         )
-//
 //         //3. Ищем элемент (с несколькими попытками
 //         let element;
 //         const selectors = [
@@ -25,12 +19,6 @@
 //                 console.log(`found element: ${element}`);
 //                 break;
 //             }
-//         }
-//
-//         //4. Если элеменет не найден - падаем с понятной ошибкой
-//         if (!element || !await element.isExisting()) {
-//             await browser.saveScreenshot('element_not_found.png')
-//             throw new Error('element_not_found');
 //         }
 //
 //         //5. Прокручиваем и ждем
