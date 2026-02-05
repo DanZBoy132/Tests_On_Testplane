@@ -1,0 +1,21 @@
+{
+    "name": "my-testplane-project",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "testplane",
+        "test:gui": "testplane gui"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "devDependencies": {
+        "@swc/core": "^1.15.11",
+        "@testplane/testing-library": "^1.0.2",
+        "html-reporter": "^11.8.3",
+        "testplane": "^8.40.6",
+        "typescript": "^5.9.3"
+    }
+}
