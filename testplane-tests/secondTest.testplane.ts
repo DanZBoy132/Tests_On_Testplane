@@ -1,6 +1,7 @@
 describe("Test Authorization Tests", function () {
     it('Authorization should be successful', async ({ browser }) => {
         const URL = "https://ru.api.rip/?secret_key=euNhV2";
+
         const CREDENTIALS = {
             email: "123@123.com",
             password: "123456"
@@ -18,6 +19,8 @@ describe("Test Authorization Tests", function () {
 
         // 2. Open page
         await browser.url(URL);
+
+        await browser.pause(5000);
 
         // 3. Open modal (using JS click for reliability as requested)
         const headerLoginBtn = await browser.$(SELECTORS.headerLoginBtn);
